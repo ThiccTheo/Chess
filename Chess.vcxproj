@@ -18,6 +18,47 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\board\board.cpp" />
+    <ClCompile Include="src\game\game.cpp" />
+    <ClCompile Include="src\game\main.cpp" />
+    <ClCompile Include="src\piece\bishop\bishop.cpp" />
+    <ClCompile Include="src\piece\king\king.cpp" />
+    <ClCompile Include="src\piece\knight\knight.cpp" />
+    <ClCompile Include="src\piece\pawn\pawn.cpp" />
+    <ClCompile Include="src\piece\piece.cpp" />
+    <ClCompile Include="src\piece\queen\queen.cpp" />
+    <ClCompile Include="src\piece\rook\rook.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\board\board.h" />
+    <ClInclude Include="src\game\game.h" />
+    <ClInclude Include="src\piece\bishop\bishop.h" />
+    <ClInclude Include="src\piece\king\king.h" />
+    <ClInclude Include="src\piece\knight\knight.h" />
+    <ClInclude Include="src\piece\pawn\pawn.h" />
+    <ClInclude Include="src\piece\piece.h" />
+    <ClInclude Include="src\piece\queen\queen.h" />
+    <ClInclude Include="src\piece\rook\rook.h" />
+    <ClInclude Include="vendor\vendor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vendor\Chess.pdb" />
+    <None Include="vendor\openal32.dll" />
+    <None Include="vendor\sfml-audio-2.dll" />
+    <None Include="vendor\sfml-audio-d-2.dll" />
+    <None Include="vendor\sfml-graphics-2.dll" />
+    <None Include="vendor\sfml-graphics-d-2.dll" />
+    <None Include="vendor\sfml-network-2.dll" />
+    <None Include="vendor\sfml-network-d-2.dll" />
+    <None Include="vendor\sfml-system-2.dll" />
+    <None Include="vendor\sfml-system-d-2.dll" />
+    <None Include="vendor\sfml-window-2.dll" />
+    <None Include="vendor\sfml-window-d-2.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\piece\spritesheet.png" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -110,10 +151,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\new\OneDrive\Desktop\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\new\OneDrive\Desktop\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -124,12 +168,17 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\new\OneDrive\Desktop\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\new\OneDrive\Desktop\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-network.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
