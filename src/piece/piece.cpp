@@ -37,27 +37,27 @@ void Piece::init(const std::string& FEN)
 	{
 		switch (POS)
 		{
-		case 'r': pieces.emplace_back(new Rook(rank, file, 'B')); rank++; break;
-		case 'R': pieces.emplace_back(new Rook(rank, file, 'W')); rank++; break;
-		case 'n': pieces.emplace_back(new Knight(rank, file, 'B')); rank++; break;
-		case 'N': pieces.emplace_back(new Knight(rank, file, 'W')); rank++; break;
-		case 'b': pieces.emplace_back(new Bishop(rank, file, 'B')); rank++; break;
-		case 'B': pieces.emplace_back(new Bishop(rank, file, 'W')); rank++; break;
-		case 'q': pieces.emplace_back(new Queen(rank, file, 'B')); rank++; break;
-		case 'Q': pieces.emplace_back(new Queen(rank, file, 'W')); rank++; break;
-		case 'k': pieces.emplace_back(new King(rank, file, 'B')); rank++; break;
-		case 'K': pieces.emplace_back(new King(rank, file, 'W')); rank++; break;
-		case 'p': pieces.emplace_back(new Pawn(rank, file, 'B')); rank++; break;
-		case 'P': pieces.emplace_back(new Pawn(rank, file, 'W')); rank++; break;
-		case '/': file++; rank = 0; break;
-		case '1': rank += 1; break;
-		case '2': rank += 2; break;
-		case '3': rank += 3; break;
-		case '4': rank += 4; break;
-		case '5': rank += 5; break;
-		case '6': rank += 6; break;
-		case '7': rank += 7; break;
-		case '8': rank += 8; break;
+			case 'r': pieces.emplace_back(new Rook(rank, file, 'B')); rank++; break;
+			case 'R': pieces.emplace_back(new Rook(rank, file, 'W')); rank++; break;
+			case 'n': pieces.emplace_back(new Knight(rank, file, 'B')); rank++; break;
+			case 'N': pieces.emplace_back(new Knight(rank, file, 'W')); rank++; break;
+			case 'b': pieces.emplace_back(new Bishop(rank, file, 'B')); rank++; break;
+			case 'B': pieces.emplace_back(new Bishop(rank, file, 'W')); rank++; break;
+			case 'q': pieces.emplace_back(new Queen(rank, file, 'B')); rank++; break;
+			case 'Q': pieces.emplace_back(new Queen(rank, file, 'W')); rank++; break;
+			case 'k': pieces.emplace_back(new King(rank, file, 'B')); rank++; break;
+			case 'K': pieces.emplace_back(new King(rank, file, 'W')); rank++; break;
+			case 'p': pieces.emplace_back(new Pawn(rank, file, 'B')); rank++; break;
+			case 'P': pieces.emplace_back(new Pawn(rank, file, 'W')); rank++; break;
+			case '/': file++; rank = 0; break;
+			case '1': rank += 1; break;
+			case '2': rank += 2; break;
+			case '3': rank += 3; break;
+			case '4': rank += 4; break;
+			case '5': rank += 5; break;
+			case '6': rank += 6; break;
+			case '7': rank += 7; break;
+			case '8': rank += 8; break;
 		}
 	}
 }
@@ -109,13 +109,14 @@ void Piece::update()
 
 			bool flag{ false };
 
+			sf::Clock delay;
+
 			while (!flag)
 			{
 				for (const auto& LEGAL_MOVE : piece->legalMoves)
 				{
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Board::tiles[LEGAL_MOVE.x + (LEGAL_MOVE.y * 8)].shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))))
 					{
-						flag = true;
 						piece->indices = LEGAL_MOVE;
 						piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
 
@@ -129,15 +130,22 @@ void Piece::update()
 							}
 						}
 
-						if (colorToMove == 'W')
+						switch (colorToMove)
 						{
-							colorToMove = 'B';
-						}
-						else if (colorToMove == 'B')
-						{
-							colorToMove = 'W';
+							case 'W': 
+								colorToMove = 'B';
+								break;
+							case 'B':
+								colorToMove = 'W';
+								break;
 						}
 
+						flag = true;
+						break;
+					}
+					else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && delay.getElapsedTime().asSeconds() > 0.3)
+					{
+						flag = true;
 						break;
 					}
 				}
