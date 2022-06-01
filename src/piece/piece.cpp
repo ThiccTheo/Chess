@@ -141,12 +141,12 @@ void Piece::update()
 
 							switch (colorToMove)
 							{
-							case 'W':
-								colorToMove = 'B';
-								break;
-							case 'B':
-								colorToMove = 'W';
-								break;
+								case 'W':
+									colorToMove = 'B';
+									break;
+								case 'B':
+									colorToMove = 'W';
+									break;
 							}
 
 							flag = true;

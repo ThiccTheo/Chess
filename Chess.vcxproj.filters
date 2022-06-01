@@ -86,7 +86,6 @@
     <None Include="vendor\sfml-network-d-2.dll" />
     <None Include="vendor\sfml-network-2.dll" />
     <None Include="vendor\sfml-graphics-d-2.dll" />
-    <None Include="vendor\Chess.pdb" />
     <None Include="vendor\openal32.dll" />
     <None Include="vendor\sfml-audio-2.dll" />
     <None Include="vendor\sfml-audio-d-2.dll" />

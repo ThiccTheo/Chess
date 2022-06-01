@@ -43,7 +43,6 @@
     <ClInclude Include="vendor\vendor.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="vendor\Chess.pdb" />
     <None Include="vendor\openal32.dll" />
     <None Include="vendor\sfml-audio-2.dll" />
     <None Include="vendor\sfml-audio-d-2.dll" />
