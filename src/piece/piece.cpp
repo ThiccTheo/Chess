@@ -139,23 +139,27 @@ void Piece::update()
 							piece->indices = tile.indices;
 							piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
 							
-							bool soundFlag{ false };
+							std::string soundType{ "move" };
 
 							for (size_t i{ 0 }; i < pieces.size(); i++)
 							{
 								if (piece != pieces[i] && piece->indices == pieces[i]->indices)
 								{
 									pieces.erase(pieces.begin() + i);
-									soundFlag = true;
+									soundType = "capture";
 									captureSound.play();
 									break;
 
 								}
 							}
 
-							if (!soundFlag)
+							if (soundType == "move")
 							{
 								moveSound.play();
+							}
+							else if (soundType == "capture")
+							{
+								captureSound.play();
 							}
 
 							switch (colorToMove)
