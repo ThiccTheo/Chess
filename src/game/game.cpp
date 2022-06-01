@@ -17,6 +17,7 @@ void Game::init()
 
 void Game::run()
 {
+	std::cout << "\033[H\033[J";
 	init();
 
 	Board::tiles.clear();

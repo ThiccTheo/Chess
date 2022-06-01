@@ -23,4 +23,10 @@ public:
 	sf::Vector2i indices;
 	char color;
 	static char colorToMove;
+private:
+	static sf::SoundBuffer moveSoundBuffer;
+	static sf::SoundBuffer captureSoundBuffer;
+	static sf::Sound moveSound;
+	static sf::Sound captureSound;
+
 };

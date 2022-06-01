@@ -12,11 +12,22 @@ char Piece::colorToMove;
 const float Piece::SPRITE_SIZE{ 80.f };
 sf::Texture Piece::texture;
 std::vector<std::unique_ptr<Piece>> Piece::pieces;
+sf::SoundBuffer Piece::moveSoundBuffer;
+sf::SoundBuffer Piece::captureSoundBuffer;
+sf::Sound Piece::moveSound;
+sf::Sound Piece::captureSound;
 
 const bool Piece::LOAD()
 {
-	if (texture.loadFromFile("src/piece/spritesheet.png"))
+	if (
+		texture.loadFromFile("src/piece/spritesheet.png") &&
+		moveSoundBuffer.loadFromFile("src/piece/move.wav") &&
+		captureSoundBuffer.loadFromFile("src/piece/capture.wav")
+
+		)
 	{
+		moveSound.setBuffer(moveSoundBuffer);
+		captureSound.setBuffer(captureSoundBuffer);
 		return true;
 	}
 	else
@@ -127,15 +138,24 @@ void Piece::update()
 						{
 							piece->indices = tile.indices;
 							piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
+							
+							bool soundFlag{ false };
 
 							for (size_t i{ 0 }; i < pieces.size(); i++)
 							{
 								if (piece != pieces[i] && piece->indices == pieces[i]->indices)
 								{
 									pieces.erase(pieces.begin() + i);
+									soundFlag = true;
+									captureSound.play();
 									break;
 
 								}
+							}
+
+							if (!soundFlag)
+							{
+								moveSound.play();
 							}
 
 							switch (colorToMove)
