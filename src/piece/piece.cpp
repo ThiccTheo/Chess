@@ -17,7 +17,6 @@ const bool Piece::LOAD()
 {
 	if (texture.loadFromFile("src/piece/spritesheet.png"))
 	{
-		texture.setSmooth(true);
 		return true;
 	}
 	else

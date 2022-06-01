@@ -3,8 +3,8 @@
 
 const float Board::SPRITE_SIZE{ 80.f };
 std::vector<Board> Board::tiles;
-sf::Color Board::selectionColor{ 250, 150, 0 };
-sf::Color Board::legalColor{ 200, 0, 0 };
+sf::Color Board::selectionColor{ 233,214,107 };
+sf::Color Board::legalColor{ 218,44,67 };
 
 Board::Board(const int X, const int Y, const char COLOR)
 {
@@ -18,10 +18,10 @@ Board::Board(const int X, const int Y, const char COLOR)
 	switch (characterColor)
 	{
 		case 'W': 
-			color = sf::Color(245, 230, 190);
+			color = sf::Color(211, 211, 211);
 			break;
 		case 'B': 
-			color = sf::Color(102, 68, 58);
+			color = sf::Color(131, 137, 150);
 			break;
 	}
 	
@@ -36,7 +36,7 @@ void Board::init()
 		{
 			char color{ (file + rank) % 2 ? 'B' : 'W' };
 
-			tiles.push_back(Board(rank, file, color));
+			tiles.emplace_back(rank, file, color);
 		}
 	}
 }

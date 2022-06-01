@@ -17,7 +17,7 @@ public:
 	bool isLegal;
 	char characterColor;
 	sf::Vector2i indices;
+	Board(const int X, const int Y, const char COLOR);
 private:
 	static const float SPRITE_SIZE;
-	Board(const int X, const int Y, const char COLOR);
 };
