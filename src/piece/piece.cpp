@@ -71,6 +71,8 @@ void Piece::constructor(const int X, const int Y, const char COLOR)
 	sprite.setPosition(indices.x * SPRITE_SIZE, indices.y * SPRITE_SIZE);
 }
 
+Piece::~Piece() {}
+
 void Piece::draw()
 {
 	for (const auto& PIECE : pieces)
@@ -90,16 +92,18 @@ void Piece::update()
 		for (auto& tile : Board::tiles)
 		{
 			tile.shape.setFillColor(tile.color);
+			tile.isLegal = false;
 		}
 
 		if (piece->sprite.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && piece->color == colorToMove && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 		{
-			Board::tiles[piece->indices.x + (piece->indices.y * 8)].shape.setFillColor(sf::Color(250, 150, 0));
+			Board::tiles[piece->indices.x + (piece->indices.y * 8)].shape.setFillColor(Board::selectionColor);
 
 			piece->generateLegalMoves();
 			for (const auto& LEGAL_MOVE : piece->legalMoves)
 			{
-				Board::tiles[LEGAL_MOVE.x + (LEGAL_MOVE.y * 8)].shape.setFillColor(sf::Color(200, 0, 0));
+				Board::tiles[LEGAL_MOVE.x + (LEGAL_MOVE.y * 8)].shape.setFillColor(Board::legalColor);
+				Board::tiles[LEGAL_MOVE.x + (LEGAL_MOVE.y * 8)].isLegal = true;
 			}
 
 			Game::window.clear(sf::Color::White);
@@ -110,40 +114,46 @@ void Piece::update()
 			bool flag{ false };
 
 			sf::Clock delay;
+			bool lock{ false };
 
 			while (!flag)
 			{
-				for (const auto& LEGAL_MOVE : piece->legalMoves)
+				for (auto& tile : Board::tiles)
 				{
-					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && Board::tiles[LEGAL_MOVE.x + (LEGAL_MOVE.y * 8)].shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))))
+					if (tile.shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && tile.isLegal)
 					{
-						piece->indices = LEGAL_MOVE;
-						piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
+						while (!sf::Mouse::isButtonPressed(sf::Mouse::Left));
 
-						for (size_t i{ 0 }; i < pieces.size(); i++)
+						if (tile.shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && tile.isLegal)
 						{
-							if (piece != pieces[i] && piece->indices == pieces[i]->indices)
+							piece->indices = tile.indices;
+							piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
+
+							for (size_t i{ 0 }; i < pieces.size(); i++)
 							{
-								pieces.erase(pieces.begin() + i);
-								break;
+								if (piece != pieces[i] && piece->indices == pieces[i]->indices)
+								{
+									pieces.erase(pieces.begin() + i);
+									break;
 
+								}
 							}
-						}
 
-						switch (colorToMove)
-						{
-							case 'W': 
+							switch (colorToMove)
+							{
+							case 'W':
 								colorToMove = 'B';
 								break;
 							case 'B':
 								colorToMove = 'W';
 								break;
-						}
+							}
 
-						flag = true;
-						break;
+							flag = true;
+							break;
+						}
 					}
-					else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && delay.getElapsedTime().asSeconds() > 0.3)
+					else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && delay.getElapsedTime().asSeconds() > 0.2)
 					{
 						flag = true;
 						break;
@@ -153,43 +163,6 @@ void Piece::update()
 
 			break;
 		}
-
-
-
-
-
-
-		/*piece->legalMoves.clear();
-
-		if (piece->sprite.getGlobalBounds().contains(mousePosition) && piece->color == colorToMove && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
-			Board& startingTile = Board::tiles[piece->indices.x + (piece->indices.y * 8)];
-			startingTile.shape.setFillColor(sf::Color::Red);
-
-			piece->generateLegalMoves();
-
-			while (true)
-			{
-				for (const auto& LEGAL_MOVE : piece->legalMoves)
-				{
-					Board& legalTile = Board::tiles[LEGAL_MOVE.x + (LEGAL_MOVE.y * 8)];
-					legalTile.shape.setFillColor(sf::Color::Red);
-
-					if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && legalTile.shape.getGlobalBounds().contains(mousePosition))
-					{
-						std::cout << "BEEP\n";
-						break;
-					}
-				}
-			}
-
-
-		}
-		else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
-			Board& startingTile = Board::tiles[piece->indices.x + (piece->indices.y * 8)];
-			startingTile.shape.setFillColor(startingTile.color);
-		}*/
 	}
 
 }

@@ -10,6 +10,7 @@ public:
 	virtual void generateLegalMoves();
 	static void init(const std::string& FEN);
 	void constructor(const int X, const int Y, const char COLOR);
+	virtual ~Piece();
 	static void draw();
 	static void update();
 	static const bool LOAD();

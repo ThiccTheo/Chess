@@ -3,9 +3,12 @@
 
 const float Board::SPRITE_SIZE{ 80.f };
 std::vector<Board> Board::tiles;
+sf::Color Board::selectionColor{ 250, 150, 0 };
+sf::Color Board::legalColor{ 200, 0, 0 };
 
 Board::Board(const int X, const int Y, const char COLOR)
 {
+	isLegal = false;
 	indices = sf::Vector2i(X, Y);
 	shape.setSize(sf::Vector2f(SPRITE_SIZE, SPRITE_SIZE));
 	shape.setPosition(static_cast<float>(X * SPRITE_SIZE), static_cast<float>(Y * SPRITE_SIZE));

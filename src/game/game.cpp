@@ -11,6 +11,8 @@ void Game::init()
 	winner = ' ';
 	window.create(sf::VideoMode(RESOLUTION.x, RESOLUTION.y), "Chess", sf::Style::Close);
 	window.setFramerateLimit(60);
+	window.setKeyRepeatEnabled(false);
+
 }
 
 void Game::run()

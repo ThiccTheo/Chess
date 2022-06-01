@@ -17,5 +17,4 @@ King::King(const int X, const int Y, const char COLOR)
 
 void King::generateLegalMoves()
 {
-
 }
