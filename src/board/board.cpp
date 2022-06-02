@@ -12,7 +12,6 @@ Board::Board(const int X, const int Y, const char COLOR)
 	indices = sf::Vector2i(X, Y);
 	shape.setSize(sf::Vector2f(SPRITE_SIZE, SPRITE_SIZE));
 	shape.setPosition(static_cast<float>(X * SPRITE_SIZE), static_cast<float>(Y * SPRITE_SIZE));
-	
 	characterColor = COLOR;
 
 	switch (characterColor)
@@ -43,8 +42,8 @@ void Board::init()
 
 void Board::draw()
 {
-	for (const auto& TILE : tiles)
+	for (auto& tile : tiles)
 	{
-		Game::window.draw(TILE.shape);
+		Game::window.draw(tile.shape);
 	}
 }
