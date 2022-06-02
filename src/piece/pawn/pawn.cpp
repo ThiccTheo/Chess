@@ -31,15 +31,18 @@ void Pawn::generateLegalMoves()
 		if (color == 'W' && indices.y - 1 >= 0 && indices.x == PIECE->indices.x && indices.y - 1 == PIECE->indices.y)
 		{
 			canMove1Space = false;
+			canMove2Spaces = false;
 		}
 		else if (color == 'B' && indices.y + 1 <= 7 && indices.x == PIECE->indices.x && indices.y + 1 == PIECE->indices.y)
 		{
 			canMove1Space = false;
+			canMove2Spaces = false;
 		}
 
 		//double pawn move
 		if (color == 'W' && canMove1Space && indices.y - 2 >= 0 && indices.x == PIECE->indices.x && indices.y - 2 == PIECE->indices.y)
 		{
+			std::cout << "beep\n";
 			canMove2Spaces = false;
 		}
 		else if (color == 'B' && canMove1Space && indices.y + 2 <= 7 && indices.x == PIECE->indices.x && indices.y + 2 == PIECE->indices.y)
