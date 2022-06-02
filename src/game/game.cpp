@@ -24,7 +24,7 @@ void Game::run()
 	Board::init();
 
 	Piece::pieces.clear();
-	Piece::init(/*"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"*/"rnbqkbnr//8/8/8/8//RNBQKBNR");
+	Piece::init("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 
 	while (window.isOpen())
 	{

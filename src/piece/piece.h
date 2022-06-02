@@ -26,6 +26,10 @@ public:
 	sf::Vector2i indices;
 	char color;
 	static char colorToMove;
+	bool onSpawnTile;
+	bool canBeEnPassantEd;
+	static int enPassantMoveCounter;
+	bool isPawn;
 private:
 	static sf::SoundBuffer moveSoundBuffer;
 	static sf::SoundBuffer captureSoundBuffer;

@@ -16,6 +16,7 @@ sf::SoundBuffer Piece::moveSoundBuffer;
 sf::SoundBuffer Piece::captureSoundBuffer;
 sf::Sound Piece::moveSound;
 sf::Sound Piece::captureSound;
+int Piece::enPassantMoveCounter;
 
 const bool Piece::LOAD()
 {
@@ -38,6 +39,7 @@ const bool Piece::LOAD()
 
 void Piece::init(const std::string& FEN)
 {
+	enPassantMoveCounter = 0;
 	int file{ 0 };
 	int rank{ 0 };
 
@@ -79,6 +81,8 @@ void Piece::constructor(const int X, const int Y, const char COLOR)
 
 	color = COLOR;
 	sprite.setPosition(indices.x * SPRITE_SIZE, indices.y * SPRITE_SIZE);
+	onSpawnTile = true;
+	isPawn = false;
 }
 
 Piece::~Piece() {}
@@ -404,8 +408,26 @@ void Piece::update()
 
 						if (tile.shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && tile.isLegal)
 						{
+							enPassantMoveCounter++;
+
+							sf::Vector2i tempIndices = piece->indices;
+
 							piece->indices = tile.indices;
 							piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
+							piece->onSpawnTile = false;
+
+							if (piece->isPawn)
+							{
+								if (piece->canBeEnPassantEd == true && enPassantMoveCounter > 0)
+								{
+									piece->canBeEnPassantEd = false;
+								}
+								if ((tempIndices.y - 2 == piece->indices.y) || (tempIndices.y + 2 == piece->indices.y))
+								{
+									piece->canBeEnPassantEd = true;
+									enPassantMoveCounter = 0;
+								}
+							}
 							/*std::cout << piece->indices.x << ", " << piece->indices.y << '\n';*/
 
 							std::string soundType{ "move" };
@@ -419,6 +441,23 @@ void Piece::update()
 									captureSound.play();
 									break;
 
+								}
+								if (pieces[i]->isPawn && pieces[i]->canBeEnPassantEd)
+								{
+									if (piece->color == 'W' && pieces[i]->color == 'B' && piece->indices.x == pieces[i]->indices.x && piece->indices.y == pieces[i]->indices.y - 1)
+									{
+										pieces.erase(pieces.begin() + i);
+										soundType = "capture";
+										captureSound.play();
+										break;
+									}
+									if (piece->color == 'B' && pieces[i]->color == 'W' && piece->indices.x == pieces[i]->indices.x && piece->indices.y == pieces[i]->indices.y + 1)
+									{
+										pieces.erase(pieces.begin() + i);
+										soundType = "capture";
+										captureSound.play();
+										break;
+									}
 								}
 							}
 
