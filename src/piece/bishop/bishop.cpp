@@ -17,5 +17,5 @@ Bishop::Bishop(const int X, const int Y, const char COLOR)
 
 void Bishop::generateLegalMoves()
 {
-
+	generateDiagonalMoves();
 }

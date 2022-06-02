@@ -17,5 +17,5 @@ Rook::Rook(const int X, const int Y, const char COLOR)
 
 void Rook::generateLegalMoves()
 {
-
+	generateOrthogonalMoves();
 }

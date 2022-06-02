@@ -93,19 +93,270 @@ void Piece::draw()
 
 void Piece::generateLegalMoves() {}
 
-void Piece::validateLegalMoves() 
+void Piece::validateLegalMoves()
 {
 	for (size_t i{ 0 }; i < legalMoves.size(); i++)
 	{
 		for (const auto& PIECE : pieces)
 		{
-			legalMoves.erase(std::remove_if(legalMoves.begin(), legalMoves.end(), 
+			legalMoves.erase(std::remove_if(legalMoves.begin(), legalMoves.end(),
 			[&PIECE, this](const sf::Vector2i& LEGAL_MOVE)
 			{
 				return (LEGAL_MOVE == PIECE->indices && color == PIECE->color);
-			}), 
+			}),
 			legalMoves.end());
 		}
+	}
+}
+
+void Piece::generateDiagonalMoves()
+{
+	sf::Vector2i pos;
+	bool flag;
+
+	//northeast
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + ((pos.y - 1) * 8) + 1) >= 0 && (pos.x + ((pos.y - 1) * 8) + 1) <= 63 && Board::tiles[pos.x + ((pos.y - 1) * 8) + 1].indices.x > pos.x)
+		{
+			pos.x++;
+			const Board& TILE = Board::tiles[pos.x + (--pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//northwest
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + ((pos.y - 1) * 8) - 1) >= 0 && (pos.x + ((pos.y - 1) * 8) - 1) <= 63 && Board::tiles[pos.x + ((pos.y - 1) * 8) - 1].indices.x < pos.x)
+		{
+			pos.x--;
+			const Board& TILE = Board::tiles[pos.x + (--pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//southeast
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + ((pos.y + 1) * 8) + 1) >= 0 && (pos.x + ((pos.y + 1) * 8) + 1) <= 63 && Board::tiles[pos.x + ((pos.y + 1) * 8) + 1].indices.x > pos.x)
+		{
+			pos.x++;
+			const Board& TILE = Board::tiles[pos.x + (++pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//southwest
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + ((pos.y + 1) * 8) - 1) >= 0 && (pos.x + ((pos.y + 1) * 8) - 1) <= 63 && Board::tiles[pos.x + ((pos.y + 1) * 8) - 1].indices.x < pos.x)
+		{
+			pos.x--;
+			const Board& TILE = Board::tiles[pos.x + (++pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+void Piece::generateOrthogonalMoves()
+{
+	sf::Vector2i pos;
+	bool flag;
+
+	//north
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + ((pos.y - 1) * 8)) >= 0 && (pos.x + ((pos.y - 1) * 8)) <= 63)
+		{
+			const Board& TILE = Board::tiles[pos.x + (--pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//south
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + ((pos.y + 1) * 8)) <= 63 && (pos.x + ((pos.y + 1) * 8)) >= 0)
+		{
+			const Board& TILE = Board::tiles[pos.x + (++pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//east
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + (pos.y * 8) + 1) % 8 != 0 && (pos.x + (pos.y * 8) + 1) <= 63 && (pos.x + (pos.y * 8) + 1) >= 0)
+		{
+			pos.x++;
+			const Board& TILE = Board::tiles[pos.x + (pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	//west
+	flag = false;
+	pos = indices;
+	while (!flag)
+	{
+		if ((pos.x + (pos.y * 8) - 1) >= 0 && (pos.x + (pos.y * 8) - 1) <= 63 && Board::tiles[pos.x + (pos.y * 8) - 1].indices.y == pos.y)
+		{
+			pos.x--;
+			const Board& TILE = Board::tiles[pos.x + (pos.y * 8)];
+
+			for (const auto& PIECE : pieces)
+			{
+				if (PIECE->indices == TILE.indices)
+				{
+					legalMoves.emplace_back(TILE.indices);
+					flag = true;
+					break;
+				}
+				else
+				{
+					legalMoves.emplace_back(TILE.indices);
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+
 	}
 }
 
@@ -149,14 +400,14 @@ void Piece::update()
 				{
 					if (tile.shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && tile.isLegal)
 					{
-						while (!sf::Mouse::isButtonPressed(sf::Mouse::Left));
+						while (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && tile.shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && tile.isLegal);
 
 						if (tile.shape.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && tile.isLegal)
 						{
 							piece->indices = tile.indices;
 							piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
 							/*std::cout << piece->indices.x << ", " << piece->indices.y << '\n';*/
-							
+
 							std::string soundType{ "move" };
 
 							for (size_t i{ 0 }; i < pieces.size(); i++)
@@ -182,12 +433,12 @@ void Piece::update()
 
 							switch (colorToMove)
 							{
-								case 'W':
-									colorToMove = 'B';
-									break;
-								case 'B':
-									colorToMove = 'W';
-									break;
+							case 'W':
+								colorToMove = 'B';
+								break;
+							case 'B':
+								colorToMove = 'W';
+								break;
 							}
 
 							flag = true;

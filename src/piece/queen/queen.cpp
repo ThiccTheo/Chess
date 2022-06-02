@@ -17,5 +17,6 @@ Queen::Queen(const int X, const int Y, const char COLOR)
 
 void Queen::generateLegalMoves()
 {
-
+	generateOrthogonalMoves();
+	generateDiagonalMoves();
 }
