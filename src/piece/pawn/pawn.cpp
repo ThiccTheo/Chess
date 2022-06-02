@@ -17,5 +17,4 @@ Pawn::Pawn(const int X, const int Y, const char COLOR)
 
 void Pawn::generateLegalMoves()
 {
-	legalMoves.emplace_back(2, 3);
 }

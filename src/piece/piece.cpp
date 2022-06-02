@@ -93,12 +93,26 @@ void Piece::draw()
 
 void Piece::generateLegalMoves() {}
 
+void Piece::validateLegalMoves() 
+{
+	for (size_t i{ 0 }; i < legalMoves.size(); i++)
+	{
+		for (const auto& PIECE : pieces)
+		{
+			legalMoves.erase(std::remove_if(legalMoves.begin(), legalMoves.end(), 
+			[&PIECE, this](const sf::Vector2i& LEGAL_MOVE)
+			{
+				return (LEGAL_MOVE == PIECE->indices && color == PIECE->color);
+			}), 
+			legalMoves.end());
+		}
+	}
+}
+
 void Piece::update()
 {
 	for (auto& piece : pieces)
 	{
-		piece->legalMoves.clear();
-
 		for (auto& tile : Board::tiles)
 		{
 			tile.shape.setFillColor(tile.color);
@@ -109,7 +123,10 @@ void Piece::update()
 		{
 			Board::tiles[piece->indices.x + (piece->indices.y * 8)].shape.setFillColor(Board::selectionColor);
 
+			piece->legalMoves.clear();
 			piece->generateLegalMoves();
+			piece->validateLegalMoves();
+
 			for (const auto& LEGAL_MOVE : piece->legalMoves)
 			{
 				Board::tiles[LEGAL_MOVE.x + (LEGAL_MOVE.y * 8)].shape.setFillColor(Board::legalColor);
@@ -138,6 +155,7 @@ void Piece::update()
 						{
 							piece->indices = tile.indices;
 							piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
+							/*std::cout << piece->indices.x << ", " << piece->indices.y << '\n';*/
 							
 							std::string soundType{ "move" };
 

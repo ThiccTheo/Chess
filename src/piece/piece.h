@@ -8,6 +8,7 @@ class Piece
 {
 public:
 	virtual void generateLegalMoves();
+	void validateLegalMoves();
 	static void init(const std::string& FEN);
 	void constructor(const int X, const int Y, const char COLOR);
 	virtual ~Piece();
