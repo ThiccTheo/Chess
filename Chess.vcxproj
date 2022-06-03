@@ -61,6 +61,7 @@
   <ItemGroup>
     <Media Include="src\piece\capture.wav" />
     <Media Include="src\piece\move.wav" />
+    <Media Include="src\piece\promotion.wav" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

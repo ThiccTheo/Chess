@@ -8,7 +8,6 @@ class Piece
 {
 public:
 	virtual void generateLegalMoves();
-	void validateLegalMoves();
 	void generateDiagonalMoves();
 	void generateOrthogonalMoves();
 	static void init(const std::string& FEN);
@@ -30,10 +29,15 @@ public:
 	bool canBeEnPassantEd;
 	static int enPassantMoveCounter;
 	bool isPawn;
+	bool shouldDelete;
 private:
+	void validateLegalMoves();
+	void promotePawn();
 	static sf::SoundBuffer moveSoundBuffer;
 	static sf::SoundBuffer captureSoundBuffer;
+	static sf::SoundBuffer promotionSoundBuffer;
 	static sf::Sound moveSound;
 	static sf::Sound captureSound;
+	static sf::Sound promotionSound;
 
 };

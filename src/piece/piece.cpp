@@ -14,8 +14,10 @@ sf::Texture Piece::texture;
 std::vector<std::unique_ptr<Piece>> Piece::pieces;
 sf::SoundBuffer Piece::moveSoundBuffer;
 sf::SoundBuffer Piece::captureSoundBuffer;
+sf::SoundBuffer Piece::promotionSoundBuffer;
 sf::Sound Piece::moveSound;
 sf::Sound Piece::captureSound;
+sf::Sound Piece::promotionSound;
 int Piece::enPassantMoveCounter;
 
 const bool Piece::LOAD()
@@ -23,12 +25,15 @@ const bool Piece::LOAD()
 	if (
 		texture.loadFromFile("src/piece/spritesheet.png") &&
 		moveSoundBuffer.loadFromFile("src/piece/move.wav") &&
-		captureSoundBuffer.loadFromFile("src/piece/capture.wav")
+		captureSoundBuffer.loadFromFile("src/piece/capture.wav") &&
+		promotionSoundBuffer.loadFromFile("src/piece/promotion.wav")
 
 		)
 	{
+		texture.setSmooth(true);
 		moveSound.setBuffer(moveSoundBuffer);
 		captureSound.setBuffer(captureSoundBuffer);
+		promotionSound.setBuffer(promotionSoundBuffer);
 		return true;
 	}
 	else
@@ -83,15 +88,22 @@ void Piece::constructor(const int X, const int Y, const char COLOR)
 	sprite.setPosition(indices.x * SPRITE_SIZE, indices.y * SPRITE_SIZE);
 	onSpawnTile = true;
 	isPawn = false;
+	shouldDelete = false;
 }
 
 Piece::~Piece() {}
 
 void Piece::draw()
 {
-	for (const auto& PIECE : pieces)
+	for (auto& piece : pieces)
 	{
-		Game::window.draw(PIECE->sprite);
+		if (piece->shouldDelete)
+		{
+			piece.reset();
+			pieces.erase(std::remove(pieces.begin(), pieces.end(), piece), pieces.end());
+			break;
+		}
+		Game::window.draw(piece->sprite);
 	}
 }
 
@@ -110,6 +122,122 @@ void Piece::validateLegalMoves()
 			}),
 			legalMoves.end());
 		}
+	}
+}
+
+void Piece::promotePawn()
+{
+	bool flag{ false };
+	std::vector<sf::RectangleShape> squares;
+	squares.emplace_back(sf::Vector2f(static_cast<float>(Game::RESOLUTION.x / 2), static_cast<float>(Game::RESOLUTION.y / 2)));
+	squares.emplace_back(sf::Vector2f(static_cast<float>(Game::RESOLUTION.x / 2), static_cast<float>(Game::RESOLUTION.y / 2)));
+	squares.emplace_back(sf::Vector2f(static_cast<float>(Game::RESOLUTION.x / 2), static_cast<float>(Game::RESOLUTION.y / 2)));
+	squares.emplace_back(sf::Vector2f(static_cast<float>(Game::RESOLUTION.x / 2), static_cast<float>(Game::RESOLUTION.y / 2)));
+
+	//queen, knight, rook, bishop
+	sf::Sprite queen;
+	queen.setTexture(texture);
+
+	sf::Sprite knight;
+	knight.setTexture(texture);
+
+	sf::Sprite rook;
+	rook.setTexture(texture);
+
+	sf::Sprite bishop;
+	bishop.setTexture(texture);
+
+	sf::Vector2f scale{ static_cast<float>(Game::RESOLUTION.x / 80 / 2), static_cast<float>(Game::RESOLUTION.y / 80 / 2) };
+	switch (color)
+	{
+		case 'W':
+			queen.setTextureRect(sf::IntRect(80, 0, 80, 80));
+			knight.setTextureRect(sf::IntRect(240, 0, 80, 80));
+			rook.setTextureRect(sf::IntRect(320, 0, 80, 80));
+			bishop.setTextureRect(sf::IntRect(160, 0, 80, 80));
+			break;
+		case 'B':
+			queen.setTextureRect(sf::IntRect(80, 80, 80, 80));
+			knight.setTextureRect(sf::IntRect(240, 80, 80, 80));
+			rook.setTextureRect(sf::IntRect(320, 80, 80, 80));
+			bishop.setTextureRect(sf::IntRect(160, 80, 80, 80));
+			break;
+	}
+
+	for (size_t i {0}; i < squares.size(); i++)
+	{
+		//squares[i].setSize(sf::Vector2f(Game::RESOLUTION.x / 4, Game::RESOLUTION.y / 4));
+		switch (i)
+		{
+			case 0:
+				squares[0].setPosition(sf::Vector2f(0.f, 0.f));
+				queen.setScale(scale);
+				queen.setPosition(squares[0].getPosition());
+				break;
+			case 1:
+				squares[1].setPosition(sf::Vector2f(static_cast<float>(Game::RESOLUTION.x / 2), 0.f));
+				knight.setScale(scale);
+				knight.setPosition(squares[1].getPosition());
+				break;
+			case 2:
+				squares[2].setPosition(sf::Vector2f(0.f, static_cast<float>(Game::RESOLUTION.y / 2)));
+				rook.setScale(scale);
+				rook.setPosition(squares[2].getPosition());
+				break;
+			case 3:
+				squares[3].setPosition(sf::Vector2f(static_cast<float>(Game::RESOLUTION.x / 2), static_cast<float>(Game::RESOLUTION.y / 2)));
+				bishop.setScale(scale);
+				bishop.setPosition(squares[3].getPosition());
+				break;
+		}
+		squares[i].setFillColor(sf::Color::White);
+	}
+	
+	sf::Clock delay;
+
+	while (!flag)
+	{
+		Game::window.clear(sf::Color::White);
+		for (size_t i{ 0 }; i < squares.size(); i++)
+		{
+			if (squares[i].getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))))
+			{
+				squares[i].setFillColor(Board::selectionColor);
+				if (delay.getElapsedTime().asSeconds() > 0.2 && squares[i].getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition(Game::window))) && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				{
+					switch (i)
+					{
+					case 0:
+						pieces.emplace_back(new Queen(indices.x, indices.y, color));
+						flag = true;
+						break;
+					case 1:
+						pieces.emplace_back(new Knight(indices.x, indices.y, color));
+						flag = true;
+						break;
+					case 2:
+						pieces.emplace_back(new Rook(indices.x, indices.y, color));
+						flag = true;
+						break;
+					case 3:
+						pieces.emplace_back(new Bishop(indices.x, indices.y, color));
+						flag = true;
+						break;
+					}
+					shouldDelete = true;
+				}
+			}
+			else
+			{
+				squares[i].setFillColor(sf::Color::White);
+			}
+			Game::window.draw(squares[i]);
+		}
+		Game::window.draw(queen);
+		Game::window.draw(knight);
+		Game::window.draw(rook);
+		Game::window.draw(bishop);
+		Game::window.display();
 	}
 }
 
@@ -415,6 +543,7 @@ void Piece::update()
 							piece->indices = tile.indices;
 							piece->sprite.setPosition(piece->indices.x * SPRITE_SIZE, piece->indices.y * SPRITE_SIZE);
 							piece->onSpawnTile = false;
+							std::string soundType{ "move" };
 
 							if (piece->isPawn)
 							{
@@ -427,18 +556,73 @@ void Piece::update()
 									piece->canBeEnPassantEd = true;
 									enPassantMoveCounter = 0;
 								}
+								switch (piece->color)
+								{
+								case 'W':
+									if (piece->indices.y == 0)
+									{
+										soundType = "promotion";
+										bool captureFlag{ false };
+										for (size_t i{ 0 }; i < pieces.size(); i++)
+										{
+											if (piece->indices == pieces[i]->indices && piece->color != pieces[i]->color)
+											{
+												captureFlag = true;
+												break;
+											}
+										}
+										if (captureFlag)
+										{
+											captureSound.play();
+										}
+										else
+										{
+											moveSound.play();
+										}
+										piece->promotePawn();
+										sf::Clock tempTimer;
+										while (tempTimer.getElapsedTime().asSeconds() < 0.1);
+									}
+									break;
+								case 'B':
+									if (piece->indices.y == 7)
+									{
+										soundType = "promotion";
+										bool captureFlag{ false };
+										for (size_t i{ 0 }; i < pieces.size(); i++)
+										{
+											if (piece->indices == pieces[i]->indices && piece->color != pieces[i]->color)
+											{
+												captureFlag = true;
+												break;
+											}
+										}
+										if (captureFlag)
+										{
+											captureSound.play();
+										}
+										else
+										{
+											moveSound.play();
+										}
+										piece->promotePawn();
+										sf::Clock tempTimer;
+										while (tempTimer.getElapsedTime().asSeconds() < 0.1);
+									}
+									break;
+								}
 							}
 							/*std::cout << piece->indices.x << ", " << piece->indices.y << '\n';*/
 
-							std::string soundType{ "move" };
-
 							for (size_t i{ 0 }; i < pieces.size(); i++)
 							{
-								if (piece != pieces[i] && piece->indices == pieces[i]->indices)
+								if (piece != pieces[i] && piece->indices == pieces[i]->indices && piece->color != pieces[i]->color)
 								{
 									pieces.erase(pieces.begin() + i);
-									soundType = "capture";
-									captureSound.play();
+									if (soundType != "promotion")
+									{
+										soundType = "capture";
+									}
 									break;
 
 								}
@@ -447,15 +631,19 @@ void Piece::update()
 									if (piece->color == 'W' && pieces[i]->color == 'B' && piece->indices.x == pieces[i]->indices.x && piece->indices.y == pieces[i]->indices.y - 1)
 									{
 										pieces.erase(pieces.begin() + i);
-										soundType = "capture";
-										captureSound.play();
+										if (soundType != "promotion")
+										{
+											soundType = "capture";
+										}
 										break;
 									}
 									if (piece->color == 'B' && pieces[i]->color == 'W' && piece->indices.x == pieces[i]->indices.x && piece->indices.y == pieces[i]->indices.y + 1)
 									{
 										pieces.erase(pieces.begin() + i);
-										soundType = "capture";
-										captureSound.play();
+										if (soundType != "promotion")
+										{
+											soundType = "capture";
+										}
 										break;
 									}
 								}
@@ -468,6 +656,10 @@ void Piece::update()
 							else if (soundType == "capture")
 							{
 								captureSound.play();
+							}
+							else if (soundType == "promotion")
+							{
+								promotionSound.play();
 							}
 
 							switch (colorToMove)
