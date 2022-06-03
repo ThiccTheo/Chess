@@ -16,6 +16,8 @@ sf::SoundBuffer Piece::moveSoundBuffer;
 sf::SoundBuffer Piece::captureSoundBuffer;
 sf::SoundBuffer Piece::promotionSoundBuffer;
 sf::Sound Piece::moveSound;
+sf::SoundBuffer Piece::castleSoundBuffer;
+sf::Sound Piece::castleSound;
 sf::Sound Piece::captureSound;
 sf::Sound Piece::promotionSound;
 int Piece::enPassantMoveCounter;
@@ -26,7 +28,8 @@ const bool Piece::LOAD()
 		texture.loadFromFile("src/piece/spritesheet.png") &&
 		moveSoundBuffer.loadFromFile("src/piece/move.wav") &&
 		captureSoundBuffer.loadFromFile("src/piece/capture.wav") &&
-		promotionSoundBuffer.loadFromFile("src/piece/promotion.wav")
+		promotionSoundBuffer.loadFromFile("src/piece/promotion.wav") &&
+		castleSoundBuffer.loadFromFile("src/piece/castle.wav")
 
 		)
 	{
@@ -34,6 +37,7 @@ const bool Piece::LOAD()
 		moveSound.setBuffer(moveSoundBuffer);
 		captureSound.setBuffer(captureSoundBuffer);
 		promotionSound.setBuffer(promotionSoundBuffer);
+		castleSound.setBuffer(castleSoundBuffer);
 		return true;
 	}
 	else
@@ -87,8 +91,8 @@ void Piece::constructor(const int X, const int Y, const char COLOR)
 	color = COLOR;
 	sprite.setPosition(indices.x * SPRITE_SIZE, indices.y * SPRITE_SIZE);
 	onSpawnTile = true;
-	isPawn = false;
 	shouldDelete = false;
+	checkCounter = 0;
 }
 
 Piece::~Piece() {}
@@ -111,17 +115,19 @@ void Piece::generateLegalMoves() {}
 
 void Piece::validateLegalMoves()
 {
-	for (size_t i{ 0 }; i < legalMoves.size(); i++)
+	for (const auto& PIECE : pieces)
 	{
-		for (const auto& PIECE : pieces)
+		//remove legal moves that collide with pieces
+		legalMoves.erase(std::remove_if(legalMoves.begin(), legalMoves.end(),
+		[&PIECE, this](const sf::Vector2i& LEGAL_MOVE)
 		{
-			legalMoves.erase(std::remove_if(legalMoves.begin(), legalMoves.end(),
-			[&PIECE, this](const sf::Vector2i& LEGAL_MOVE)
+			/*if (PIECE->indices == LEGAL_MOVE && PIECE->name == "king" && PIECE->color != color)
 			{
-				return (LEGAL_MOVE == PIECE->indices && color == PIECE->color);
-			}),
-			legalMoves.end());
-		}
+				PIECE->checkCounter++;
+			}*/
+			return (LEGAL_MOVE == PIECE->indices && color == PIECE->color);
+		}),
+		legalMoves.end());
 	}
 }
 
@@ -496,6 +502,7 @@ void Piece::update()
 {
 	for (auto& piece : pieces)
 	{
+
 		for (auto& tile : Board::tiles)
 		{
 			tile.shape.setFillColor(tile.color);
@@ -545,7 +552,39 @@ void Piece::update()
 							piece->onSpawnTile = false;
 							std::string soundType{ "move" };
 
-							if (piece->isPawn)
+							if (piece->name == "king")
+							{
+								//castling long
+								if (tempIndices.x - 2 == piece->indices.x)
+								{
+									for (auto& castlePiece : pieces)
+									{
+										if (castlePiece->color == piece->color && castlePiece->name == "rook" && castlePiece->onSpawnTile == true && castlePiece->indices.x == 0)
+										{
+											castlePiece->indices.x += 3;
+											castlePiece->sprite.setPosition(castlePiece->indices.x * SPRITE_SIZE, castlePiece->indices.y * SPRITE_SIZE);
+											soundType = "castle";
+											break;
+										}
+									}
+								}
+								//castling short
+								if (tempIndices.x + 2 == piece->indices.x)
+								{
+									for (auto& castlePiece : pieces)
+									{
+										if (castlePiece->color == piece->color && castlePiece->name == "rook" && castlePiece->onSpawnTile == true && castlePiece->indices.x == 7)
+										{
+											castlePiece->indices.x -= 2;
+											castlePiece->sprite.setPosition(castlePiece->indices.x * SPRITE_SIZE, castlePiece->indices.y * SPRITE_SIZE);
+											soundType = "castle";
+											break;
+										}
+									}
+								}
+							}
+
+							if (piece->name == "pawn")
 							{
 								if (piece->canBeEnPassantEd == true && enPassantMoveCounter > 0)
 								{
@@ -626,7 +665,7 @@ void Piece::update()
 									break;
 
 								}
-								if (pieces[i]->isPawn && pieces[i]->canBeEnPassantEd)
+								if (pieces[i]->name == "pawn" && pieces[i]->canBeEnPassantEd)
 								{
 									if (piece->color == 'W' && pieces[i]->color == 'B' && piece->indices.x == pieces[i]->indices.x && piece->indices.y == pieces[i]->indices.y - 1)
 									{
@@ -660,6 +699,10 @@ void Piece::update()
 							else if (soundType == "promotion")
 							{
 								promotionSound.play();
+							}
+							else if (soundType == "castle")
+							{
+								castleSound.play();
 							}
 
 							switch (colorToMove)

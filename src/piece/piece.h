@@ -28,14 +28,17 @@ public:
 	bool onSpawnTile;
 	bool canBeEnPassantEd;
 	static int enPassantMoveCounter;
-	bool isPawn;
+	std::string name;
 	bool shouldDelete;
-private:
+	int checkCounter;
 	void validateLegalMoves();
+private:
 	void promotePawn();
 	static sf::SoundBuffer moveSoundBuffer;
 	static sf::SoundBuffer captureSoundBuffer;
 	static sf::SoundBuffer promotionSoundBuffer;
+	static sf::SoundBuffer castleSoundBuffer;
+	static sf::Sound castleSound;
 	static sf::Sound moveSound;
 	static sf::Sound captureSound;
 	static sf::Sound promotionSound;

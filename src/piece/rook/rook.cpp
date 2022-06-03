@@ -4,6 +4,8 @@ Rook::Rook(const int X, const int Y, const char COLOR)
 {
 	constructor(X, Y, COLOR);
 
+	name = "rook";
+
 	switch (color)
 	{
 		case 'W':

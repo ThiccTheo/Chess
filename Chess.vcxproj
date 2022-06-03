@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="src\piece\capture.wav" />
+    <Media Include="src\piece\castle.wav" />
     <Media Include="src\piece\move.wav" />
     <Media Include="src\piece\promotion.wav" />
   </ItemGroup>

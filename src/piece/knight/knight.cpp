@@ -4,6 +4,8 @@ Knight::Knight(const int X, const int Y, const char COLOR)
 {
 	constructor(X, Y, COLOR);
 
+	name = "knight";
+
 	switch (color)
 	{
 	case 'W':

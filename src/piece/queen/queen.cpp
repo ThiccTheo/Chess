@@ -4,6 +4,8 @@ Queen::Queen(const int X, const int Y, const char COLOR)
 {
 	constructor(X, Y, COLOR);
 
+	name = "queen";
+
 	switch (color)
 	{
 		case 'W':
